@@ -16,7 +16,25 @@ import { Muxer, ArrayBufferTarget } from 'mp4-muxer';
  * @param {File|Blob|string} source
  * @returns {Promise<HTMLImageElement>}
  */
-export function loadImage(source) {
+export async function loadImage(source) {
+  // If it's a File or Blob, try createImageBitmap first to automatically honor EXIF orientation
+  if (source instanceof Blob || source instanceof File) {
+    try {
+      const bitmap = await createImageBitmap(source, { imageOrientation: 'from-image' });
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = bitmap.width;
+      tempCanvas.height = bitmap.height;
+      const ctx = tempCanvas.getContext('2d');
+      ctx.drawImage(bitmap, 0, 0);
+      const img = new Image();
+      img.src = tempCanvas.toDataURL();
+      await new Promise((res) => { img.onload = res; });
+      return img;
+    } catch {
+      // Fallback to standard URL.createObjectURL
+    }
+  }
+
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
