@@ -34,7 +34,7 @@ const state = {
     contrastBoost: 0.08,
     vibranceBoost: 0.12,
     sliderPos: 50, // Percentage for before/after split slider
-    compareMode: 'split', // 'split' | 'side' | 'hold'
+    compareMode: 'split', // 'split' | 'hold'
     zoomLevel: 'fit', // 'fit' | '100' | '200'
     showSafeZone: false,
     isHoldingSpace: false,
@@ -95,7 +95,7 @@ document.querySelector('#app').innerHTML = `
         <span class="indicator-dot"></span>
         <span>Canvas / WebCodecs Ready</span>
       </div>
-      <button class="btn-util" id="btn-paste-shortcut" title="Tempel gambar langsung dari clipboard">
+      <button class="btn-util" id="btn-paste-shortcut" title="Tempel gambar langsung dari clipboard (Ctrl+V)">
         <i data-lucide="clipboard-paste"></i>
         <span>Paste</span>
         <kbd>Ctrl+V</kbd>
@@ -121,15 +121,16 @@ document.querySelector('#app').innerHTML = `
             <i data-lucide="upload-cloud"></i>
           </div>
           <div>
-            <div class="dropzone-label">Pilih atau Tarik Foto</div>
+            <div class="dropzone-label">Pilih atau Tarik Foto ke Sini</div>
             <div class="dropzone-sub">Mendukung JPG, PNG, WEBP, atau tekan <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.1);padding:1px 4px;border-radius:3px;">Ctrl+V</kbd></div>
           </div>
           <input type="file" id="photo-file-input" class="hidden-file-input" accept="image/*" />
         </div>
 
-        <!-- Preset Chips -->
+        <!-- Sample Presets Bar -->
         <div class="sample-chips-row">
-          <button class="sample-chip" id="btn-sample-landscape" title="Uji coba foto horizontal dengan latar blur estetik">
+          <span style="font-size: 11px; color: var(--text-muted);">Contoh Foto:</span>
+          <button class="sample-chip active" id="btn-sample-landscape" title="Uji coba foto horizontal dengan latar blur estetik">
             <i data-lucide="mountain"></i> Bromo (Landscape)
           </button>
           <button class="sample-chip" id="btn-sample-portrait" title="Uji coba foto vertikal layar penuh">
@@ -141,11 +142,11 @@ document.querySelector('#app').innerHTML = `
         <div class="control-group">
           <div class="control-header">
             <span>Profil Optimasi Cepat</span>
-            <span class="control-badge" id="lbl-quick-profile">Kustom</span>
+            <span class="control-badge" id="lbl-quick-profile">Pemandangan</span>
           </div>
           <div class="sample-chips-row" style="margin-top: 2px;">
             <button class="sample-chip" id="btn-preset-portrait">Potret Wajah</button>
-            <button class="sample-chip" id="btn-preset-landscape">Pemandangan</button>
+            <button class="sample-chip active" id="btn-preset-landscape">Pemandangan</button>
             <button class="sample-chip" id="btn-preset-text">Teks / Flyer</button>
             <button class="sample-chip" id="btn-preset-reset">Reset Default</button>
           </div>
@@ -262,10 +263,10 @@ document.querySelector('#app').innerHTML = `
         <div class="stage-toolbar">
           <div class="stage-toolbar-group">
             <span class="stage-tool-label">Mode Komparasi:</span>
-            <button class="btn-stage-tool active" id="btn-compare-split" title="Bandingkan dengan pemisah garis">
+            <button class="btn-stage-tool active" id="btn-compare-split" title="Geser pemisah untuk membandingkan">
               <i data-lucide="columns"></i> Split Slider
             </button>
-            <button class="btn-stage-tool" id="btn-compare-hold" title="Tahan spasi atau tombol untuk melihat foto sebelum">
+            <button class="btn-stage-tool" id="btn-compare-hold" title="Tahan tombol atau spasi untuk melihat asli">
               <i data-lucide="eye"></i> Tahan Spasi (Lihat Asli)
             </button>
           </div>
@@ -344,7 +345,7 @@ document.querySelector('#app').innerHTML = `
             <i data-lucide="film"></i>
           </div>
           <div>
-            <div class="dropzone-label">Pilih atau Tarik File Video</div>
+            <div class="dropzone-label">Pilih atau Tarik File Video ke Sini</div>
             <div class="dropzone-sub">MP4, MOV, WebM (Auto-Split jika > 30s)</div>
           </div>
           <input type="file" id="video-file-input" class="hidden-file-input" accept="video/*" />
@@ -352,8 +353,8 @@ document.querySelector('#app').innerHTML = `
 
         <!-- Demo Generator Video -->
         <div class="sample-chips-row">
-          <button class="sample-chip" id="btn-sample-video">
-            <i data-lucide="play-circle"></i> Generate Video Tes WhatsApp
+          <button class="sample-chip active" id="btn-sample-video">
+            <i data-lucide="play-circle"></i> Buat Video Generator Tes Otomatis
           </button>
         </div>
 
@@ -422,7 +423,7 @@ document.querySelector('#app').innerHTML = `
         <!-- Process Action -->
         <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
           <button class="btn-primary-action" id="btn-process-video">
-            <i data-lucide="play"></i>
+            <i data-lucide="sparkles"></i>
             <span>Proses Video Sweet-Spot (.mp4)</span>
           </button>
         </div>
@@ -431,15 +432,15 @@ document.querySelector('#app').innerHTML = `
       <!-- Right: Video Stage Viewport -->
       <section class="viewport-stage">
         <div class="stage-toolbar">
-          <div class="stage-toolbar-group">
-            <span class="stage-tool-label">Spesifikasi:</span>
+          <div class="stage-toolbar-group" style="flex: 1;">
+            <button class="btn-stage-tool" id="btn-play-pause-video">
+              <i data-lucide="play" id="icon-play-pause"></i> Putar Video
+            </button>
+            <input type="range" id="video-scrubber" min="0" max="100" value="0" style="flex: 1; max-width: 240px;" />
             <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-primary);" id="video-duration-meta">00:00 (1080x1920)</span>
           </div>
 
           <div class="stage-toolbar-group">
-            <button class="btn-stage-tool" id="btn-play-pause-video">
-              <i data-lucide="play" id="icon-play-pause"></i> Putar Video
-            </button>
             <button class="btn-stage-tool" id="btn-toggle-video-safe-zone">
               <i data-lucide="grid"></i> Area Aman WA
             </button>
@@ -453,7 +454,7 @@ document.querySelector('#app').innerHTML = `
               <div id="video-empty-placeholder" class="empty-video-placeholder">
                 <i data-lucide="film"></i>
                 <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">Belum ada video aktif</div>
-                <div style="font-size: 11px; color: var(--text-muted);">Tarik file video atau klik "Generate Video Tes WhatsApp".</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Tarik file video atau klik "Buat Video Generator Tes".</div>
               </div>
 
               <!-- Safe Zone Guide on Video -->
@@ -478,7 +479,7 @@ document.querySelector('#app').innerHTML = `
   <main class="tab-pane" id="tab-inspector">
     <div class="diagnostic-container">
       <!-- Upload Dropzone for Audit -->
-      <div class="compact-dropzone" id="inspector-dropzone" style="padding: 28px 16px;">
+      <div class="compact-dropzone" id="inspector-dropzone" style="padding: 24px 16px;">
         <div class="dropzone-icon-wrap" style="width: 44px; height: 44px;">
           <i data-lucide="scan-search" style="width: 22px; height: 22px;"></i>
         </div>
@@ -487,6 +488,16 @@ document.querySelector('#app').innerHTML = `
           <div class="dropzone-sub">Deteksi potensi burik, resolusi berlebih, durasi, dan masalah bitrate sebelum diunggah ke WhatsApp.</div>
         </div>
         <input type="file" id="inspector-file-input" class="hidden-file-input" accept="image/*,video/*" />
+
+        <div class="sample-chips-row" style="margin-top: 10px; justify-content: center;">
+          <span style="font-size: 11px; color: var(--text-muted);">Uji Cepat Sampel:</span>
+          <button class="sample-chip" id="btn-diag-sample-landscape">
+            <i data-lucide="mountain"></i> Sampel Foto Bromo
+          </button>
+          <button class="sample-chip" id="btn-diag-sample-portrait">
+            <i data-lucide="coffee"></i> Sampel Foto Kafe
+          </button>
+        </div>
       </div>
 
       <!-- Diagnostic Results Dashboard -->
@@ -716,6 +727,11 @@ function switchTab(tabName) {
   state.currentTab = tabName;
   tabButtons.forEach((b) => b.classList.toggle('active', b.getAttribute('data-tab') === tabName));
   tabPanes.forEach((p) => p.classList.toggle('active', p.id === `tab-${tabName}`));
+
+  // If opening inspector for first time and no inspection yet, auto-run on sample
+  if (tabName === 'inspector' && !state.inspector.result) {
+    runAuditOnUrl('/samples/sample_landscape.jpg', 'sample_bromo.jpg');
+  }
 }
 
 // -------------------------------------------------------------
@@ -780,47 +796,47 @@ function updateTelemetry() {
   );
 }
 
-// Split slider positioning
+// Split slider positioning with clamping
 function updateSplitSliderPosition(pct) {
-  state.photo.sliderPos = pct;
-  splitBeforeWrapper.style.width = `${pct}%`;
-  splitHandle.style.left = `${pct}%`;
+  state.photo.sliderPos = Math.max(2, Math.min(98, pct));
+  splitBeforeWrapper.style.width = `${state.photo.sliderPos}%`;
+  splitHandle.style.left = `${state.photo.sliderPos}%`;
 }
 
-// Drag logic for split slider
+// Robust Pointer Events Drag logic for split slider
 let isDraggingSlider = false;
 
 function onSliderMove(clientX) {
   const rect = splitSliderBox.getBoundingClientRect();
+  if (rect.width <= 0) return;
   const x = clientX - rect.left;
   let pct = (x / rect.width) * 100;
-  pct = Math.max(3, Math.min(97, pct));
   updateSplitSliderPosition(pct);
 }
 
-splitSliderBox.addEventListener('mousedown', (e) => {
+splitSliderBox.addEventListener('pointerdown', (e) => {
+  e.preventDefault();
   isDraggingSlider = true;
+  splitSliderBox.setPointerCapture(e.pointerId);
   onSliderMove(e.clientX);
 });
 
-window.addEventListener('mousemove', (e) => {
-  if (isDraggingSlider) onSliderMove(e.clientX);
+splitSliderBox.addEventListener('pointermove', (e) => {
+  if (isDraggingSlider) {
+    onSliderMove(e.clientX);
+  }
 });
 
-window.addEventListener('mouseup', () => {
-  isDraggingSlider = false;
+splitSliderBox.addEventListener('pointerup', (e) => {
+  if (isDraggingSlider) {
+    isDraggingSlider = false;
+    try {
+      splitSliderBox.releasePointerCapture(e.pointerId);
+    } catch {}
+  }
 });
 
-splitSliderBox.addEventListener('touchstart', (e) => {
-  isDraggingSlider = true;
-  if (e.touches.length > 0) onSliderMove(e.touches[0].clientX);
-});
-
-window.addEventListener('touchmove', (e) => {
-  if (isDraggingSlider && e.touches.length > 0) onSliderMove(e.touches[0].clientX);
-});
-
-window.addEventListener('touchend', () => {
+splitSliderBox.addEventListener('pointercancel', () => {
   isDraggingSlider = false;
 });
 
@@ -885,9 +901,15 @@ document.getElementById('btn-paste-shortcut').addEventListener('click', async ()
   }
 });
 
-// Photo Dropzone
+// Photo Dropzone Click & Drag
 const photoDropzone = document.getElementById('photo-dropzone');
 const photoFileInput = document.getElementById('photo-file-input');
+
+photoDropzone.addEventListener('click', (e) => {
+  if (e.target !== photoFileInput) {
+    photoFileInput.click();
+  }
+});
 
 photoDropzone.addEventListener('dragover', (e) => {
   e.preventDefault();
@@ -912,9 +934,14 @@ photoFileInput.addEventListener('change', (e) => {
   }
 });
 
-// Sample Chips
-document.getElementById('btn-sample-landscape').addEventListener('click', async () => {
+// Sample Chips Handlers
+const btnSampleLandscape = document.getElementById('btn-sample-landscape');
+const btnSamplePortrait = document.getElementById('btn-sample-portrait');
+
+btnSampleLandscape.addEventListener('click', async () => {
   try {
+    btnSampleLandscape.classList.add('active');
+    btnSamplePortrait.classList.remove('active');
     const img = await loadImage('/samples/sample_landscape.jpg');
     state.photo.sourceImg = img;
     state.photo.fileName = 'bromo_sunrise_hd';
@@ -932,8 +959,10 @@ document.getElementById('btn-sample-landscape').addEventListener('click', async 
   }
 });
 
-document.getElementById('btn-sample-portrait').addEventListener('click', async () => {
+btnSamplePortrait.addEventListener('click', async () => {
   try {
+    btnSamplePortrait.classList.add('active');
+    btnSampleLandscape.classList.remove('active');
     const img = await loadImage('/samples/sample_portrait.jpg');
     state.photo.sourceImg = img;
     state.photo.fileName = 'kafe_portrait_hd';
@@ -950,8 +979,14 @@ document.getElementById('btn-sample-portrait').addEventListener('click', async (
 const rangeSharpen = document.getElementById('range-sharpen');
 const rangeDither = document.getElementById('range-dither');
 const rangeContrast = document.getElementById('range-contrast');
+const presetButtons = [
+  document.getElementById('btn-preset-portrait'),
+  document.getElementById('btn-preset-landscape'),
+  document.getElementById('btn-preset-text'),
+  document.getElementById('btn-preset-reset'),
+];
 
-function setSliders(sharpen, dither, contrast, profileName) {
+function setSliders(sharpen, dither, contrast, profileName, activeBtn) {
   rangeSharpen.value = sharpen;
   state.photo.sharpenAmount = sharpen / 100;
   document.getElementById('lbl-val-sharpen').textContent = `${sharpen}%`;
@@ -965,23 +1000,25 @@ function setSliders(sharpen, dither, contrast, profileName) {
   document.getElementById('lbl-val-contrast').textContent = `${contrast}%`;
 
   document.getElementById('lbl-quick-profile').textContent = profileName;
+
+  presetButtons.forEach((b) => b.classList.toggle('active', b === activeBtn));
   updatePhotoCanvases();
 }
 
-document.getElementById('btn-preset-portrait').addEventListener('click', () => {
-  setSliders(35, 10, 5, 'Potret Wajah');
+document.getElementById('btn-preset-portrait').addEventListener('click', function () {
+  setSliders(35, 10, 5, 'Potret Wajah', this);
 });
 
-document.getElementById('btn-preset-landscape').addEventListener('click', () => {
-  setSliders(50, 18, 10, 'Pemandangan');
+document.getElementById('btn-preset-landscape').addEventListener('click', function () {
+  setSliders(50, 18, 10, 'Pemandangan', this);
 });
 
-document.getElementById('btn-preset-text').addEventListener('click', () => {
-  setSliders(65, 5, 12, 'Teks / Flyer');
+document.getElementById('btn-preset-text').addEventListener('click', function () {
+  setSliders(65, 5, 12, 'Teks / Flyer', this);
 });
 
-document.getElementById('btn-preset-reset').addEventListener('click', () => {
-  setSliders(45, 15, 8, 'Default');
+document.getElementById('btn-preset-reset').addEventListener('click', function () {
+  setSliders(45, 15, 8, 'Default', this);
 });
 
 // Slider Input Listeners
@@ -990,6 +1027,7 @@ rangeSharpen.addEventListener('input', (e) => {
   state.photo.sharpenAmount = val / 100;
   document.getElementById('lbl-val-sharpen').textContent = `${val}%`;
   document.getElementById('lbl-quick-profile').textContent = 'Kustom';
+  presetButtons.forEach((b) => b.classList.remove('active'));
   updatePhotoCanvases();
 });
 
@@ -998,6 +1036,7 @@ rangeDither.addEventListener('input', (e) => {
   state.photo.microDither = val / 1000;
   document.getElementById('lbl-val-dither').textContent = `${(val / 10).toFixed(1)}%`;
   document.getElementById('lbl-quick-profile').textContent = 'Kustom';
+  presetButtons.forEach((b) => b.classList.remove('active'));
   updatePhotoCanvases();
 });
 
@@ -1006,6 +1045,7 @@ rangeContrast.addEventListener('input', (e) => {
   state.photo.contrastBoost = val / 100;
   document.getElementById('lbl-val-contrast').textContent = `${val}%`;
   document.getElementById('lbl-quick-profile').textContent = 'Kustom';
+  presetButtons.forEach((b) => b.classList.remove('active'));
   updatePhotoCanvases();
 });
 
@@ -1044,8 +1084,6 @@ btnCompareSplit.addEventListener('click', () => {
   state.photo.compareMode = 'split';
   btnCompareSplit.classList.add('active');
   btnCompareHold.classList.remove('active');
-  splitBeforeWrapper.style.display = 'block';
-  splitHandle.style.display = 'flex';
   updateSplitSliderPosition(50);
 });
 
@@ -1057,7 +1095,7 @@ function toggleHoldOriginal() {
   state.photo.isHoldingSpace = !state.photo.isHoldingSpace;
   btnCompareHold.classList.toggle('active', state.photo.isHoldingSpace);
   if (state.photo.isHoldingSpace) {
-    updateSplitSliderPosition(100);
+    updateSplitSliderPosition(98);
   } else {
     updateSplitSliderPosition(50);
   }
@@ -1067,7 +1105,8 @@ function toggleHoldOriginal() {
 window.addEventListener('keydown', (e) => {
   if (e.code === 'Space' && e.target === document.body && state.currentTab === 'photo') {
     e.preventDefault();
-    updateSplitSliderPosition(100);
+    updateSplitSliderPosition(98);
+    btnCompareHold.classList.add('active');
   }
 });
 
@@ -1075,6 +1114,7 @@ window.addEventListener('keyup', (e) => {
   if (e.code === 'Space' && state.currentTab === 'photo') {
     e.preventDefault();
     updateSplitSliderPosition(50);
+    btnCompareHold.classList.remove('active');
   }
 });
 
@@ -1100,7 +1140,7 @@ btnZoomToggle.addEventListener('click', () => {
   } else if (state.photo.zoomLevel === '100') {
     state.photo.zoomLevel = '200';
     aspectFrameContainer.style.transform = 'scale(1.6)';
-    document.getElementById('lbl-zoom-level').textContent = 'Zoom: 200% (Loupe)';
+    document.getElementById('lbl-zoom-level').textContent = 'Zoom: 200%';
   } else {
     state.photo.zoomLevel = 'fit';
     aspectFrameContainer.style.transform = 'scale(1.0)';
@@ -1157,7 +1197,7 @@ btnDownloadPhoto.addEventListener('click', async () => {
           origin: { y: 0.8 },
         });
 
-        showToast('Foto HD siap diunggah ke WhatsApp Status.');
+        showToast('Foto HD berhasil diunduh! Siap diunggah ke status WA.');
       },
       'image/jpeg',
       0.98
@@ -1207,11 +1247,18 @@ const videoEmptyPlaceholder = document.getElementById('video-empty-placeholder')
 const videoDropzone = document.getElementById('video-dropzone');
 const videoFileInput = document.getElementById('video-file-input');
 const btnPlayPauseVideo = document.getElementById('btn-play-pause-video');
+const videoScrubber = document.getElementById('video-scrubber');
 const videoSplitterContainer = document.getElementById('video-splitter-container');
 const videoSegmentsList = document.getElementById('video-segments-list');
 const btnProcessVideo = document.getElementById('btn-process-video');
 const videoSafeZoneGuides = document.getElementById('video-safe-zone-guides');
 const btnToggleVideoSafeZone = document.getElementById('btn-toggle-video-safe-zone');
+
+videoDropzone.addEventListener('click', (e) => {
+  if (e.target !== videoFileInput) {
+    videoFileInput.click();
+  }
+});
 
 btnPlayPauseVideo.addEventListener('click', () => {
   if (previewVideoElement.paused) {
@@ -1222,6 +1269,22 @@ btnPlayPauseVideo.addEventListener('click', () => {
     btnPlayPauseVideo.innerHTML = '<i data-lucide="play"></i> Putar Video';
   }
   createIcons({ icons });
+});
+
+previewVideoElement.addEventListener('timeupdate', () => {
+  if (previewVideoElement.duration > 0) {
+    const cur = previewVideoElement.currentTime;
+    const dur = previewVideoElement.duration;
+    videoScrubber.value = (cur / dur) * 100;
+    document.getElementById('video-duration-meta').textContent = `${formatTime(cur)} / ${formatTime(dur)} (1080x1920)`;
+  }
+});
+
+videoScrubber.addEventListener('input', (e) => {
+  if (previewVideoElement.duration > 0) {
+    const target = (parseFloat(e.target.value) / 100) * previewVideoElement.duration;
+    previewVideoElement.currentTime = target;
+  }
 });
 
 btnToggleVideoSafeZone.addEventListener('click', () => {
@@ -1477,6 +1540,33 @@ async function runInspector(file) {
   }
 }
 
+async function runAuditOnUrl(url, fileName) {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const file = new File([blob], fileName, { type: blob.type });
+    await runInspector(file);
+  } catch (e) {
+    console.error('Audit sample error:', e);
+  }
+}
+
+document.getElementById('btn-diag-sample-landscape').addEventListener('click', (e) => {
+  e.stopPropagation();
+  runAuditOnUrl('/samples/sample_landscape.jpg', 'bromo_sunrise_sample.jpg');
+});
+
+document.getElementById('btn-diag-sample-portrait').addEventListener('click', (e) => {
+  e.stopPropagation();
+  runAuditOnUrl('/samples/sample_portrait.jpg', 'kafe_portrait_sample.jpg');
+});
+
+inspectorDropzone.addEventListener('click', (e) => {
+  if (e.target !== inspectorFileInput && !e.target.closest('button')) {
+    inspectorFileInput.click();
+  }
+});
+
 inspectorDropzone.addEventListener('dragover', (e) => {
   e.preventDefault();
   inspectorDropzone.classList.add('dragover');
@@ -1511,16 +1601,27 @@ btnFixInStudio.addEventListener('click', () => {
   }
 });
 
-// Auto-load default sample on startup so user immediately sees interactive preview
-window.addEventListener('DOMContentLoaded', async () => {
+// -------------------------------------------------------------
+// APP INITIALIZATION
+// -------------------------------------------------------------
+async function initApp() {
   try {
+    // 1. Initial sample photo
     const sampleImg = await loadImage('/samples/sample_landscape.jpg');
     state.photo.sourceImg = sampleImg;
     state.photo.fileName = 'bromo_sunrise_hd';
     state.photo.rawWidth = sampleImg.naturalWidth || sampleImg.width;
     state.photo.rawHeight = sampleImg.naturalHeight || sampleImg.height;
     updatePhotoCanvases();
+    updateSplitSliderPosition(50);
   } catch (err) {
-    console.log('Sample initial load:', err);
+    console.error('App init error:', err);
   }
-});
+}
+
+// Guarantee execution regardless of document state
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
